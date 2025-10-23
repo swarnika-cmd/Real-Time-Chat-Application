@@ -32,6 +32,12 @@ const ProtectedRoute = ({ children }) => {
 
 
 function App() {
+
+  // 💡 Set the document title here
+  React.useEffect(() => {
+    document.title = "PINSTAGRAM - Real-Time Chat";
+  }, []);
+  
   return (
     // 💡 BrowserRouter is required for routing
     <BrowserRouter>

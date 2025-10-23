@@ -1,5 +1,5 @@
 // client/src/pages/Register.jsx
-
+import { FaComments } from 'react-icons/fa';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import authService from '../services/authService';
@@ -37,7 +37,9 @@ const Register = () => {
 
   return (
     <div className="form-container">
-      <h2>Register Account</h2>
+    {/* ✅ FIX: Wrap the text in quotes to treat it as a static string */}
+    <h2>{"PINSTAGRAM"}</h2> 
+    <p>Join the community and chat instantly</p>
       <form onSubmit={onSubmit}>
         <input 
           type="text" 
@@ -65,7 +67,9 @@ const Register = () => {
         />
         <button type="submit">Register</button>
       </form>
-      {message && <p style={{ color: 'green' }}>{message}</p>}
+      {message && <p style={{ marginTop: '20px', color: '#B0BACC' }}>
+        Already have an account? <Link to="/login" style={{ color: '#4cc9f0', textDecoration: 'none', fontWeight: '500' }}>Sign In</Link>
+    </p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <p>Already have an account? 
         {/* 💡 Use Link for client-side navigation */}

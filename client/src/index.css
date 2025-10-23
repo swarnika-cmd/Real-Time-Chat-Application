@@ -1,68 +1,354 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* client/src/index.css - Modern, Aesthetic Theme with Gradient/Texture */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* --- Font Import (Inter) --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
+/* --- Global Reset & Base Styles --- */
 body {
   margin: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #151A22; /* Base dark background */
+  color: #E0E7FF; /* Light text for dark theme */
+  overflow-y: hidden; /* Prevent body scroll */
+  font-weight: 400;
+}
+
+/* --- Main App Container (#root) with Page-wide Gradient & Subtle Texture --- */
+#root {
   display: flex;
-  place-items: center;
-  min-width: 320px;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
+  width: 100%;
+  position: relative; /* For absolute positioning of texture */
+  overflow: hidden; /* To keep texture within bounds */
+
+  /* 💡 Soft, Deep Gradient Background */
+  background: linear-gradient(135deg, #2D3748 0%, #1A202C 100%);
+  
+  /* 💡 Subtle Noise/Texture Overlay */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* You can replace 'data:image/png...' with a path to a custom subtle texture image */
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.15' fill-rule='evenodd'%3E%3Cpath d='M0 0h30v30H0V0zm15 15h30v30H15V15z'/%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.1; /* Control intensity of the texture */
+    pointer-events: none; /* Allow clicks to pass through */
+  }
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* --- Login/Register Form Styles (Refined Neumorphic/Glassmorphic) --- */
+.form-container {
+  /* 💡 Container's own soft gradient background */
+  background: linear-gradient(145deg, rgba(40, 48, 60, 0.7), rgba(26, 30, 38, 0.7));
+  
+  /* 💡 Glassmorphism: Blur the background */
+  backdrop-filter: blur(15px); /* Stronger blur for more effect */
+  -webkit-backdrop-filter: blur(15px); /* For Safari */
+
+  padding: 40px; /* More generous padding */
+  border-radius: 20px; /* Softer, more modern rounded corners */
+  width: 400px; /* A bit wider */
+  text-align: center;
+  
+  /* 💡 Neumorphic-like soft, layered shadows */
+  box-shadow: 
+    8px 8px 20px rgba(0, 0, 0, 0.6), /* Darker bottom-right shadow */
+    -8px -8px 20px rgba(255, 255, 255, 0.05), /* Lighter top-left shadow for "lift" */
+    0 0 0 1px rgba(255, 255, 255, 0.08); /* Subtle border for definition */
+  
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Very subtle light border */
+  transition: all 0.3s ease;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+.form-container h2 {
+  color: #9275F3; /* Soft purple accent */
+  margin-bottom: 10px; /* Reduced space below title */
+  font-weight: 700;
+  letter-spacing: 2px; /* Increased letter spacing for dramatic effect */
+  font-size: 2.8em; /* Large, impactful title */
+  text-shadow: 0 0 15px rgba(146, 117, 243, 0.5); /* Stronger glow */
+}
+
+.form-container p {
+  color: #B0BACC;
+  margin-bottom: 30px;
+  font-size: 1.1em;
+  font-weight: 300;
+}
+
+.form-container input {
+  width: 100%;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  border: none; /* No default border */
+  border-radius: 10px;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.3); /* Darker input background */
+  color: #E0E7FF;
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5), inset -2px -2px 5px rgba(255, 255, 255, 0.05); /* Inset shadow for "pressed" look */
+  transition: all 0.3s ease;
+}
+
+.form-container input::placeholder {
+  color: #8C99AA;
+}
+
+.form-container input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #9275F3, inset 2px 2px 5px rgba(0, 0, 0, 0.5), inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+  border: 1px solid #9275F3; /* Subtle border on focus */
+}
+
+.form-container .button-group {
+    display: flex;
+    gap: 15px; /* Space between login/register buttons */
+    margin-bottom: 25px;
+}
+
+.form-container button {
+  flex: 1; /* Make buttons take equal width */
+  padding: 15px;
+  background-color: #9275F3; /* Soft purple for primary action */
+  color: white;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.form-container button:hover:not(:disabled) {
+  background-color: #8367E0; /* Slightly darker purple on hover */
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.form-container button:disabled {
+  background-color: #5C4B99;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* --- Utility Classes for Login/Register (Ensure your Login.jsx/Register.jsx use these for structure) --- */
+.auth-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-page-container .logo-icon {
+    font-size: 3em; /* Larger icon */
+    color: #9275F3;
+    margin-bottom: 20px;
+    text-shadow: 0 0 15px rgba(146, 117, 243, 0.5); /* Glow for icon */
+}
+
+/* --- Chat Application Layout (Keeping previous elegant styles) --- */
+.chat-container {
+  display: flex;
+  width: 95vw;
+  max-width: 1500px;
+  height: 90vh;
+  background: rgba(45, 64, 89, 0.4); /* Translucent dark blue */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  margin: 0 auto; /* Center if max-width is hit */
+}
+
+/* --- Sidebar (Distinct, slightly darker layer) --- */
+.sidebar {
+  width: 320px;
+  padding: 20px 15px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 15px;
+}
+
+.logout-button {
+  background-color: #D64545; /* Soft red for logout */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 15px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+.logout-button:hover {
+    background-color: #C0392B;
+    transform: translateY(-1px);
+}
+
+.online-title {
+  margin-top: 15px;
+  font-size: 1.2em;
+  color: #4cc9f0;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.user-item {
+  padding: 15px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.3s;
+  font-weight: 500;
+  color: #E0E7FF;
+}
+
+.user-item:hover {
+  background-color: rgba(76, 201, 240, 0.1);
+}
+
+.user-item.selected {
+  background-color: #4cc9f0;
+  color: #1b263b;
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(76, 201, 240, 0.5);
+}
+
+/* --- Main Chat Area --- */
+.chat-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.chat-header h2 {
+    color: #4cc9f0;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+}
+
+.message-area {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.welcome-message-area {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #B0BACC;
+  font-size: 1.2em;
+  text-align: center;
+  padding: 20px;
+}
+
+/* --- Scrollbar Styling --- */
+.message-area::-webkit-scrollbar {
+    width: 6px;
+}
+.message-area::-webkit-scrollbar-thumb {
+    background-color: #4cc9f0;
+    border-radius: 3px;
+}
+.message-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+/* --- Message Bubbles --- */
+.message-bubble {
+  max-width: 65%;
+  padding: 12px 18px;
+  border-radius: 25px;
+  margin: 8px 0;
+  word-wrap: break-word;
+  font-size: 1em;
+  font-weight: 400;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.message-bubble.sent {
+  align-self: flex-end;
+  background: linear-gradient(45deg, #9275F3, #8367E0); /* Purple gradient for sent */
+  color: white;
+  border-bottom-right-radius: 8px;
+}
+
+.message-bubble.received {
+  align-self: flex-start;
+  background-color: #3b4e6d;
+  color: #E0E7FF;
+  border-bottom-left-radius: 8px;
+}
+
+/* --- Message Form and Input --- */
+.message-form {
+  display: flex;
+  padding: 15px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.message-input {
+  flex-grow: 1;
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: 1px solid #3b4e6d;
+  background-color: #1b263b;
+  color: #E0E7FF;
+  margin-right: 15px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.message-input:focus {
+    outline: none;
+    border-color: #9275F3; /* Purple focus for chat input */
+    box-shadow: 0 0 0 2px rgba(146, 117, 243, 0.3);
+}
+
+.send-button {
+  padding: 12px 25px; /* Adjust padding */
+  border-radius: 25px;
+  background: linear-gradient(45deg, #9275F3, #8367E0); /* Purple gradient for send button */
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.send-button:hover:not(:disabled) {
+    background: linear-gradient(45deg, #8367E0, #745CBF);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+.send-button:disabled {
+    background: #5C4B99;
+    cursor: not-allowed;
+    box-shadow: none;
 }

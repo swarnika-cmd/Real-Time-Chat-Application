@@ -131,28 +131,24 @@ const Chat = () => {
 
     // --- COMPONENT RENDER ---
     return (
-        <div className="chat-container" style={{ display: 'flex', height: '100vh' }}>
+        // 💡 Use class name for main container
+        <div className="chat-container"> 
             {/* LEFT SIDEBAR: USER LIST */}
-            <div className="sidebar" style={{ width: '250px', borderRight: '1px solid #ccc', padding: '10px' }}>
-                <header style={{ paddingBottom: '10px', borderBottom: '1px solid #eee' }}>
+            <div className="sidebar"> 
+                <header className="sidebar-header">
                     <p>Logged in as: <strong>{user?.username}</strong></p>
-                    <button onClick={handleLogout}>Log Out</button>
+                    <button onClick={handleLogout} className="logout-button">Log Out</button>
                 </header>
                 
-                <h4 style={{ marginTop: '15px' }}>Online Users</h4>
+                <h4 className="online-title">Online Users</h4>
                 {allUsers.length === 0 ? (
-                    <p>No other users available</p>
+                    <p className="no-users">No other users available</p>
                 ) : (
                     allUsers.map((target) => (
                         <div 
                             key={target._id} 
                             onClick={() => selectChatTarget(target)}
-                            style={{ 
-                                padding: '10px', 
-                                cursor: 'pointer', 
-                                backgroundColor: chatTarget?._id === target._id ? '#e0f7fa' : 'transparent',
-                                borderBottom: '1px dotted #eee'
-                            }}
+                            className={`user-item ${chatTarget?._id === target._id ? 'selected' : ''}`}
                         >
                             {target.username}
                         </div>
@@ -161,38 +157,39 @@ const Chat = () => {
             </div>
 
             {/* MAIN CHAT AREA */}
-            <div className="chat-main" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <header style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+            <div className="chat-main">
+                <header className="chat-header">
                     <h2>Chatting with {chatTarget?.username || 'Select a User'}</h2>
                 </header>
                 
                 {!chatTarget ? (
-                    <div style={{ flexGrow: 1, display: 'grid', placeItems: 'center' }}>
+                    <div className="welcome-message-area">
                         <p>Select a user from the left sidebar to start chatting.</p>
                     </div>
                 ) : (
                     <>
-                        <div className="message-area" style={{ flexGrow: 1, overflowY: 'scroll', padding: '10px' }}>
+                        <div className="message-area">
                             {messages.map((msg, index) => (
                                 <div 
                                     key={index} 
-                                    style={{ textAlign: msg.sender?._id === user._id ? 'right' : 'left', margin: '5px' }}
+                                    // 💡 Dynamic class for sender/receiver alignment
+                                    className={`message-bubble ${msg.sender?._id === user._id ? 'sent' : 'received'}`} 
                                 >
-                                    <strong>{msg.sender?.username}:</strong> {msg.content}
+                                    {msg.content}
                                 </div>
                             ))}
                         </div>
 
-                        <form onSubmit={sendChatMessage} style={{ display: 'flex', padding: '10px', borderTop: '1px solid #eee' }}>
+                        <form onSubmit={sendChatMessage} className="message-form">
                             <input 
                                 type="text"
-                                value={messageInput} // 💡 Bind value to new state
-                                onChange={(e) => setMessageInput(e.target.value)} // 💡 Update new state
+                                value={messageInput}
+                                onChange={(e) => setMessageInput(e.target.value)}
                                 placeholder="Type a message..."
-                                style={{ flexGrow: 1, padding: '10px' }}
+                                className="message-input"
                                 disabled={!chatTarget}
                             />
-                            <button type="submit" disabled={!chatTarget || !messageInput} style={{ padding: '10px' }}>Send</button>
+                            <button type="submit" disabled={!chatTarget || !messageInput} className="send-button">Send</button>
                         </form>
                     </>
                 )}

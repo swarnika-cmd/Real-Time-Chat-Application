@@ -1,5 +1,5 @@
 
-
+import { FaComments } from 'react-icons/fa';
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
@@ -56,7 +56,9 @@ const Login = () => {
 
   return (
     <div className="form-container">
-      <h2>Log In</h2>
+    {/* ✅ FIX: Wrap the text in quotes to treat it as a static string */}
+    <h2>{"PINSTAGRAM"}</h2> 
+    <p>Welcome Back! Connect in real-time</p>
       <form onSubmit={onSubmit}>
         <input 
           type="email" 
