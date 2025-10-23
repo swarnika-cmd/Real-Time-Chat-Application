@@ -98,16 +98,3 @@ All endpoints are prefixed with `/api`.
 | **`message_received`** | Server → Client | Server broadcasts the message to all clients in the chat room. |
 
 ***
-
-## 2. How to Directly Enter the README on GitHub
-
-The easiest and most common way to add the initial README (or any file) to a repository that's already pushed is through the GitHub website interface.
-
-1.  **Go to your Repository:** Navigate to `https://github.com/swarnika-cmd/Real-Time-Chat-Application.git` in your web browser.
-2.  **Click "Add file":** On the main page of your repository, look for the **"Add file"** button, then select **"Create new file"**.
-3.  **Name the File:** In the filename field, type **`README.md`** (GitHub will automatically recognize this name and format the file).
-4.  **Paste Content:** Paste the entire Markdown content provided above into the editing window.
-5.  **Commit:** Scroll to the bottom and add a commit message (e.g., "DOCS: Add initial project README.md file").
-6.  Click the **"Commit new file"** button.
-
-The file will instantly be committed to your repository's `main` branch and will display as the main landing page for your project.
