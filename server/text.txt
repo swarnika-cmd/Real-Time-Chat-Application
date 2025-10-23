@@ -1,0 +1,1 @@
+mongodb+srv://swarnika24bcs10482_db_user:x0RZVl2HPzagii7b@chatcluster.i7o0rmo.mongodb.net/?retryWrites=true&w=majority&appName=ChatCluster
