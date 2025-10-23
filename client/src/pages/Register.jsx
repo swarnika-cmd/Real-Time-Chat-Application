@@ -1,6 +1,7 @@
 // client/src/pages/Register.jsx
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import authService from '../services/authService';
 
 const Register = () => {
@@ -66,6 +67,10 @@ const Register = () => {
       </form>
       {message && <p style={{ color: 'green' }}>{message}</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      <p>Already have an account? 
+        {/* 💡 Use Link for client-side navigation */}
+        <Link to="/login">Login here</Link>
+      </p>
     </div>
   );
 };

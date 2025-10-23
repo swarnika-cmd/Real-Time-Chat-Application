@@ -9,50 +9,51 @@ We will start with  the Rouiites and controllers for messaging
 
 const asyncHandler = require('express-async-handler');
 const Message = require('../models/Message');
-const User = require('../models/User'); // Needed to confirm user existence
+const User = require('../models/User'); 
 
 // @desc    Send a new message
 // @route   POST /api/messages
 // @access  Private
 const sendMessage = asyncHandler(async (req, res) => {
-    //1. Get sender ID from the middleware (req.user) and data from the body
-    const{ receiverId, content, messageType} = req.body;
+    // 1. Get sender ID from the middleware (req.user) and data from the body
+    const { receiverId, content, messageType } = req.body;
     const senderId = req.user._id;
 
-    ///2. Basic validation
-    if(!receiverId || !content){
+    // 2. Basic validation
+    if (!receiverId || !content) {
         res.status(400);
-        throw new Error('Please include both receiverId and message content.')
+        throw new Error('Please include both receiverId and message content.');
     }
 
-    //3. Verify receiver exists or not 
+    // 3. Verify receiver exists or not 
     const receiver = await User.findById(receiverId);
-    if(!receiverId){
+    // 🐛 FIX 1: The condition was checking the variable 'receiverId' instead of the result 'receiver'
+    if (!receiver) { 
         res.status(404);
         throw new Error('Receiver user not found');
     }
 
-    //4. Create and save the new message document 
+    // 4. Create and save the new message document 
     const newMessage = await Message.create({
         sender: senderId,
         receiver: receiverId,
         content,
-        messageType: messageType || 'Text'
+        // 🐛 FIX 2: Mongoose schema uses 'text' (lowercase) by default, using 'Text' might cause issues
+        messageType: messageType || 'text' 
     });
 
-    //5. Populate sender/receiver data for  the response
-    // we populate the fields to return the full user objects instead of just IDs
-    const populatedMessage = await Message.findById(newMessage._id).
-    populate('sender', 'username avatar'). //  only include username and avatar from sender
-    populate('receiver', 'username avatar'); //Only include username and avatar from the receiver
+    // 5. Populate sender/receiver data for the response
+    // 🐛 FIX 3: Include '_id' in populate to ensure frontend socket logic has the ID for display/routing
+    const populatedMessage = await Message.findById(newMessage._id)
+        .populate('sender', 'username avatar _id') 
+        .populate('receiver', 'username avatar _id'); 
 
-    if(populatedMessage){
+    if (populatedMessage) {
         res.status(201).json(populatedMessage)
-    }else{
+    } else {
         res.status(500);
         throw new Error('Failed to save message.');
     }
-
 });
 
 // @desc    Get all messages between two users (conversation history)
@@ -60,7 +61,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 // @access  Private
 const getMessages = asyncHandler(async (req, res) => {
     const userId = req.user._id;
-    const receiverId = req.params.receiverId; // Get the ID from the URL parameter
+    const receiverId = req.params.receiverId; 
 
     // 1. Basic Validation
     if (!receiverId) {
@@ -69,27 +70,21 @@ const getMessages = asyncHandler(async (req, res) => {
     }
 
     // 2. Query the database
-    // Find messages where:
-    // (sender = userId AND receiver = receiverId) 
-    // OR 
-    // (sender = receiverId AND receiver = userId)
     const messages = await Message.find({
         $or: [
             { sender: userId, receiver: receiverId },
             { sender: receiverId, receiver: userId },
         ],
     })
-    .sort({ createdAt: 1 }) // Sort by creation date (oldest first)
-    .populate('sender', 'username avatar')
-    .populate('receiver', 'username avatar');
+    .sort({ createdAt: 1 }) 
+    // 🐛 FIX 4: Include '_id' in populate for consistency
+    .populate('sender', 'username avatar _id') 
+    .populate('receiver', 'username avatar _id'); 
 
     // 3. Send the history back
-    if (messages) {
-        res.status(200).json(messages);
-    } else {
-        res.status(404);
-        throw new Error('No messages found for this conversation.');
-    }
+    // 🐛 FIX 5: Send an empty array (200 OK) if no messages are found, rather than throwing a 404 error
+    // Throwing an error for an empty history can unnecessarily crash the frontend's fetch logic.
+    res.status(200).json(messages); 
 });
 
 module.exports = { sendMessage, getMessages };

@@ -1,24 +1,26 @@
+// server/server.js
+
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/db');
-// 1. Import the User Routes module
-const userRoutes = require('./routes/userRoutes'); 
-
-// Import the CORS package
+const userRoutes = require('./routes/userRoutes');
 const cors = require('cors');
-const messageRoutes = require('./routes/messageRoutes'); // 👈 Import message routes
-
-//2)a. Import http and socket.io
+const messageRoutes = require('./routes/messageRoutes'); 
+// 1. Import http and socket.io
 const http = require('http'); 
 const { Server } = require('socket.io');
 
+// 🐛 FIX 1: Import Error Handling Middleware
+const { notFound, errorHandler } = require('./middleware/errorMiddleware'); 
+
 
 const app = express();
-//2)b. Create the HTTP server using the Express app
+// 2. Create the HTTP server using the Express app
 const server = http.createServer(app);
 
-//Add CORS middleware configuration
-const frontendOrigin = 'http://localhost:5173'; // Your Vite frontend port!
+// 3. Add CORS middleware configuration for the REST API
+const frontendOrigin = 'http://localhost:5173'; 
 
 app.use(cors({
     origin: frontendOrigin,
@@ -26,12 +28,11 @@ app.use(cors({
     credentials: true,
 }));
 
-///2)c.Create the Socket.io server (CORS is needed for the frontend)
+// 4. Create the Socket.io server
 const io = new Server(server, {
     pingTimeout: 60000,
     cors: {
-        origin: 'http://localhost:5173', //This explicitly allows the frontend
-        // we can replace with our frontend URL later
+        origin: frontendOrigin, // Using the variable for consistency
         methods: ['GET', 'POST'],
     },
 });
@@ -39,47 +40,49 @@ const io = new Server(server, {
 // Connect to MongoDB
 connectDB();
 
-// Middleware to read JSON data
+// Middleware to read JSON data (Must be before routes)
 app.use(express.json());
-
 
 // Sample route to test
 app.get('/', (req, res) => {
     res.send('Chat App is running ! yay');
 });
 
-// 2. Define the base path for User Routes
-// All routes in userRoutes will start with /api/users
+// Routes
 app.use('/api/users', userRoutes); 
+app.use('/api/messages', messageRoutes); 
 
-// Message Routes 
-app.use('/api/messages', messageRoutes); // 👈 Use message routes
+// ------------------------------------------------------------
+// 🐛 FIX 2: Implement Error Middleware
+// These MUST be placed after all routes.
+app.use(notFound); 
+app.use(errorHandler);
+// ------------------------------------------------------------
 
 
 const port = 5000;
-// 2)d. CHANGE: Use server.listen, not app.listen
+// 5. Use server.listen, not app.listen
 server.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
 
-//2)e. Add Socket.io Connection Logic
-io.in('connection', (socket) =>{
-    console.log('Socket.io : A user connected');
+// 6. Add Socket.io Connection Logic
+io.on('connection', (socket) =>{
+    console.log('Socket.io: A user connected');
 
     ///Example 1: Join a chat room
-    socket.io('join_chat', (roomId) =>{
+    socket.on('join_chat', (roomId) =>{ 
         socket.join(roomId);
         console.log(`User joined room: ${roomId}`);
     });
 
-    ///Example 2: Handle incomming messages and broadcast it 
+    ///Example 2: Handle incoming messages and broadcast it 
     socket.on('new_message', (data) =>{
-        //Broadcast the message to all users in the room EXCEPT the sender
-        socket.to(data.roomId).emit('message_received', data);
+        // Broadcast the message to all users in the room EXCEPT the sender
+        // The data object should contain the roomId from the frontend (Chat.jsx)
+        // The frontend sends the saved message data.
+        socket.to(data.roomId).emit('message_received', data); 
     });
-
-    // NOTE: In a real app, you would save the message to MongoDB here first,
-    // but since we have a REST API for sending, we just broadcast for now.
 
     socket.on('disconnect', () => {
         console.log('Socket.io: User disconnected');

@@ -111,9 +111,27 @@ const getMyProfile = asyncHandler(async (req, res) => {
     });
 });
 
+const getAllUsers = asyncHandler(async (req, res) => {
+    // req.user is the currently logged-in user, set by the 'protect' middleware.
+    const currentUserId = req.user._id;
+
+    // Fetch all users BUT exclude the current user.
+    const users = await User.find({ _id: { $ne: currentUserId } })
+        .select('-password -__v') // Exclude password and Mongoose version field
+        .sort({ username: 1 }); // Sort alphabetically
+
+    if (users) {
+        res.status(200).json(users);
+    } else {
+        res.status(404);
+        throw new Error('No other users found.');
+    }
+});
+
 
 module.exports = {
     registerUser,
     authUser,
     getMyProfile, 
+    getAllUsers,
 };
