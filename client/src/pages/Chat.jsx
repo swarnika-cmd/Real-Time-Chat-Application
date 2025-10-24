@@ -1,4 +1,4 @@
-// client/src/pages/Chat.jsx
+// client/src/pages/Chat.jsx (Structurally Modified for 3-Panel UI)
 
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
@@ -6,6 +6,8 @@ import authService from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import axios from 'axios'; 
+// Optional: Import a placeholder icon like FaPaperclip for the right panel aesthetic
+// import { FaPaperclip } from 'react-icons/fa'; 
 
 const ENDPOINT = "http://localhost:5000"; 
 let socket; 
@@ -17,14 +19,14 @@ const Chat = () => {
     const [allUsers, setAllUsers] = useState([]); 
     const [chatTarget, setChatTarget] = useState(null); 
     const [messages, setMessages] = useState([]); 
-    const [messageInput, setMessageInput] = useState(''); // 💡 State for the input field
+    const [messageInput, setMessageInput] = useState(''); 
 
     // --- EFFECT 1: SOCKET CONNECTION & DISCONNECTION ---
     useEffect(() => {
+        // ... (existing socket connection logic remains the same) ...
         socket = io(ENDPOINT); 
         
         socket.on('message_received', (newMessage) => {
-            // Check if the received message is for the currently open chat
             if (chatTarget && (newMessage.sender._id === chatTarget._id || newMessage.receiver._id === chatTarget._id)) {
                 setMessages((prevMessages) => [...prevMessages, newMessage]);
             }
@@ -33,20 +35,16 @@ const Chat = () => {
         return () => {
             socket.disconnect();
         };
-    }, [chatTarget, user]); // Re-run if chatTarget or user changes
+    }, [chatTarget, user]); 
 
     // --- EFFECT 2: FETCH ALL USERS ---
     useEffect(() => {
+        // ... (existing fetchUsers logic remains the same) ...
         if (!token) return;
 
         const fetchUsers = async () => {
             try {
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                };
-                
+                const config = { headers: { Authorization: `Bearer ${token}` } };
                 const response = await axios.get(`${ENDPOINT}/api/users/all`, config);
                 setAllUsers(response.data);
             } catch (error) {
@@ -58,7 +56,6 @@ const Chat = () => {
                 }
             }
         };
-
         fetchUsers();
     }, [token, dispatch, navigate]);
 
@@ -72,24 +69,14 @@ const Chat = () => {
     // --- HANDLER TO SELECT A CHAT TARGET AND FETCH HISTORY ---
     const selectChatTarget = async (targetUser) => { 
         setChatTarget(targetUser);
-        setMessages([]); // Clear previous messages
+        setMessages([]); 
         
-        // 1. Join the chat room (Socket.io)
         const roomId = user._id < targetUser._id ? `${user._id}_${targetUser._id}` : `${targetUser._id}_${user._id}`;
         socket.emit('join_chat', roomId);
 
-        // 2. Fetch Message History (REST API)
         try {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            };
-
-            // Call the GET /api/messages/:receiverId endpoint
+            const config = { headers: { Authorization: `Bearer ${token}` } };
             const response = await axios.get(`${ENDPOINT}/api/messages/${targetUser._id}`, config);
-            
-            // Update state with old messages
             setMessages(response.data); 
             
         } catch (error) {
@@ -98,32 +85,26 @@ const Chat = () => {
     };
     
     // --- SEND MESSAGE HANDLER (Socket.io) ---
-    const sendChatMessage = async (e) => { // 💡 Make async to send to REST API if needed
+    const sendChatMessage = async (e) => { 
         e.preventDefault();
         
         if (messageInput.trim() === '' || !chatTarget) return;
 
         const messageData = {
-            // 💡 Ensure the target ID is passed to the REST API
             receiverId: chatTarget._id, 
             content: messageInput,
-            // 💡 Ensure the room ID logic is consistent for broadcasting
             roomId: user._id < chatTarget._id ? `${user._id}_${chatTarget._id}` : `${chatTarget._id}_${user._id}`, 
         };
         
         try {
-            // 1. Send to REST API to save to MongoDB
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            // The response will contain the saved, populated message object
             const savedMessage = await axios.post(`${ENDPOINT}/api/messages`, messageData, config);
             
-            // 2. Emit the SAVED message object to the room via socket
             socket.emit('new_message', savedMessage.data); 
             
-            // 3. Add the saved message to local state immediately
             setMessages((prevMessages) => [...prevMessages, savedMessage.data]);
             
-            setMessageInput(''); // Clear input
+            setMessageInput(''); 
         } catch (error) {
             console.error("Failed to send message:", error);
         }
@@ -133,7 +114,7 @@ const Chat = () => {
     return (
         // 💡 Use class name for main container
         <div className="chat-container"> 
-            {/* LEFT SIDEBAR: USER LIST */}
+            {/* 1. LEFT SIDEBAR: USER LIST */}
             <div className="sidebar"> 
                 <header className="sidebar-header">
                     <p>Logged in as: <strong>{user?.username}</strong></p>
@@ -156,7 +137,7 @@ const Chat = () => {
                 )}
             </div>
 
-            {/* MAIN CHAT AREA */}
+            {/* 2. MAIN CHAT AREA */}
             <div className="chat-main">
                 <header className="chat-header">
                     <h2>Chatting with {chatTarget?.username || 'Select a User'}</h2>
@@ -172,9 +153,9 @@ const Chat = () => {
                             {messages.map((msg, index) => (
                                 <div 
                                     key={index} 
-                                    // 💡 Dynamic class for sender/receiver alignment
                                     className={`message-bubble ${msg.sender?._id === user._id ? 'sent' : 'received'}`} 
                                 >
+                                    {/* Display content and sender name (optional, useful for debugging) */}
                                     {msg.content}
                                 </div>
                             ))}
@@ -189,10 +170,21 @@ const Chat = () => {
                                 className="message-input"
                                 disabled={!chatTarget}
                             />
+                            {/* 💡 Right panel button placeholder (optional) */}
+                            {/* <button type="button" className="attachment-button"> <FaPaperclip /> </button> */}
                             <button type="submit" disabled={!chatTarget || !messageInput} className="send-button">Send</button>
                         </form>
                     </>
                 )}
+            </div>
+            
+            {/* 3. NEW RIGHT PANEL: Placeholder for attachments/info */}
+            <div className="right-panel">
+                <div className="info-box">
+                    <h4 className="accent-color" style={{marginBottom: '15px'}}>Conversation Info</h4>
+                    <p style={{color: '#B0BACC'}}>This panel can display shared files, starred messages, or user details.</p>
+                    <p style={{color: '#B0BACC', marginTop: '10px'}}>User: {chatTarget?.username || 'None'}</p>
+                </div>
             </div>
         </div>
     );
