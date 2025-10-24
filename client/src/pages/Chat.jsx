@@ -1,5 +1,5 @@
 // client/src/pages/Chat.jsx - Modern 3-Panel Chat Interface
-
+import { API_BASE_URL, SOCKET_URL } from '../config/api';
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import authService from '../services/authService';
@@ -19,7 +19,7 @@ import {
     FaStar
 } from 'react-icons/fa';
 
-const ENDPOINT = "http://localhost:5000";
+const ENDPOINT = API_BASE_URL;
 let socket;
 
 const Chat = () => {
