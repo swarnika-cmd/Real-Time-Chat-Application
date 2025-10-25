@@ -1,6 +1,5 @@
 // server/server.js (Updated for Render Deployment)
 
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/db');
@@ -43,10 +42,6 @@ connectDB();
 // Middleware to read JSON data
 app.use(express.json());
 
-// Sample route to test
-app.get('/', (req, res) => {
-    res.send('PINSTAGRAM API is running! 🚀');
-});
 
 // Routes
 app.use('/api/users', userRoutes); 
