@@ -1,3 +1,4 @@
+
 # 💬 Real-Time MERN Chat Application
 
 This is a full-stack, real-time chat application built using the MERN stack (MongoDB, Express, React, Node.js) and powered by Socket.io for instant message delivery. It features secure user authentication and dynamic display of conversation history.
@@ -98,3 +99,6 @@ All endpoints are prefixed with `/api`.
 | **`message_received`** | Server → Client | Server broadcasts the message to all clients in the chat room. |
 
 ***
+
+# Real-Time-Chat-Application
+
