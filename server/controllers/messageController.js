@@ -15,46 +15,60 @@ const User = require('../models/User');
 // @route   POST /api/messages
 // @access  Private
 const sendMessage = asyncHandler(async (req, res) => {
-    // 1. Get sender ID from the middleware (req.user) and data from the body
-    const { receiverId, content, messageType } = req.body;
+    // 1. Get sender ID from middleware and data from body
+    const { receiverId, content, messageType, fileUrl, fileName, fileSize, mimeType } = req.body;
     const senderId = req.user._id;
 
-    // 2. Basic validation
-    if (!receiverId || !content) {
+    // 2. Basic validation - either content OR fileUrl must exist
+    if (!receiverId || (!content && !fileUrl)) {
         res.status(400);
-        throw new Error('Please include both receiverId and message content.');
+        throw new Error('Please include receiverId and either message content or a file.');
     }
 
-    // 3. Verify receiver exists or not 
+    // 3. Verify receiver exists
     const receiver = await User.findById(receiverId);
-    // 🐛 FIX 1: The condition was checking the variable 'receiverId' instead of the result 'receiver'
     if (!receiver) { 
         res.status(404);
         throw new Error('Receiver user not found');
     }
 
-    // 4. Create and save the new message document 
-    const newMessage = await Message.create({
+    // 4. Create message data object
+    const messageData = {
         sender: senderId,
         receiver: receiverId,
-        content,
-        // 🐛 FIX 2: Mongoose schema uses 'text' (lowercase) by default, using 'Text' might cause issues
-        messageType: messageType || 'text' 
-    });
+        messageType: messageType || 'text'
+    };
 
-    // 5. Populate sender/receiver data for the response
-    // 🐛 FIX 3: Include '_id' in populate to ensure frontend socket logic has the ID for display/routing
+    // Add content if provided
+    if (content) {
+        messageData.content = content;
+    }
+
+    // Add file data if provided
+    if (fileUrl) {
+        messageData.fileUrl = fileUrl;
+        messageData.fileName = fileName;
+        messageData.fileSize = fileSize;
+        messageData.mimeType = mimeType;
+    }
+
+    // 5. Create and save the new message
+    const newMessage = await Message.create(messageData);
+
+    // 6. Populate sender/receiver data for response
     const populatedMessage = await Message.findById(newMessage._id)
         .populate('sender', 'username avatar _id') 
         .populate('receiver', 'username avatar _id'); 
 
     if (populatedMessage) {
-        res.status(201).json(populatedMessage)
+        res.status(201).json(populatedMessage);
     } else {
         res.status(500);
         throw new Error('Failed to save message.');
     }
 });
+
+// Keep your getMessages function EXACTLY as it is - no changes needed
 
 // @desc    Get all messages between two users (conversation history)
 // @route   GET /api/messages/:receiverId

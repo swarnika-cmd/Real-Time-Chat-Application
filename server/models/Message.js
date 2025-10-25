@@ -13,14 +13,31 @@ const messageSchema = new mongoose.Schema({
     },
     content: {
         type: String,
-        required: true,
-        trim: true
+        trim: true  // REMOVED required:true to allow file-only messages
     },
     messageType: {
         type: String,
-        enum: ['text', 'image', 'file'],
+        enum: ['text', 'image', 'video', 'audio', 'pdf', 'file'], // ADDED more types
         default: 'text'
     },
+    // ✨ NEW FIELDS FOR FILE UPLOADS
+    fileUrl: {
+        type: String,
+        default: null
+    },
+    fileName: {
+        type: String,
+        default: null
+    },
+    fileSize: {
+        type: Number,
+        default: null
+    },
+    mimeType: {
+        type: String,
+        default: null
+    },
+    // EXISTING FIELDS
     isRead: {
         type: Boolean,
         default: false
@@ -29,7 +46,7 @@ const messageSchema = new mongoose.Schema({
         type: Date
     }
 }, {
-    timestamps: true  // createdAt and updatedAt
+    timestamps: true
 });
 
 module.exports = mongoose.model('Message', messageSchema);

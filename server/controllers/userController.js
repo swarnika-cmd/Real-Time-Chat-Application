@@ -24,7 +24,9 @@ const generateToken = (id) => {
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
     // Extract data from the request body
-    const { username, email, password } = req.body;
+    const { username, email, password
+, avatar, avatarType
+     } = req.body;
 
     // --- Basic Validation ---
     if (!username || !email || !password) {
@@ -39,15 +41,17 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new Error('User with this email or username already exists.');
     }
 
-    // --- Hash Password ---
-    const salt = await bcrypt.genSalt(10); // Generate salt (random data for hashing)
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // // --- Hash Password ---
+    // const salt = await bcrypt.genSalt(10); // Generate salt (random data for hashing)
+    // const hashedPassword = await bcrypt.hash(password, salt);
 
     // --- Create User in Database ---
     const user = await User.create({
         username,
         email,
-        password: hashedPassword, // Store the HASHED password
+        password, // our  model will itself hash the password 
+        avatar: avatar || null,
+        avatarType: avatarType || 'emoji',
         // avatar will use the default value defined in the User model
     });
 
@@ -59,6 +63,8 @@ const registerUser = asyncHandler(async (req, res) => {
             username: user.username,
             email: user.email,
             avatar: user.avatar,
+            avatarType: user.avatarType,
+            token: generateToken(user._id),
             // 💡 Optional: Generate a token on registration for immediate login
             // token: generateToken(user._id),
             message: 'User registered successfully',

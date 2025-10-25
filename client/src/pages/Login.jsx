@@ -12,7 +12,8 @@ const Login = () => {
     
     const { dispatch } = useContext(AuthContext); 
     
-    const { email, password } = formData;
+    // Destructuring formData is correct here
+    const { email, password } = formData; 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -27,8 +28,17 @@ const Login = () => {
         setError(null);
         setIsLoading(true);
 
+        const userData = { email, password };
+
+        console.log("Submitting Data:", userData);
+
         try {
-            const response = await authService.login({ email, password });
+            // 💡 CORRECTION: Pass the destructured variables directly for clarity
+            // Your original line was also correct, but this ensures we pass a clean object.
+            const userData = { email, password }; 
+            
+            // This is the core API call
+            const response = await authService.login(userData);
             
             dispatch({ 
                 type: 'LOGIN_SUCCESS', 
@@ -48,23 +58,23 @@ const Login = () => {
     };
 
     return (
-        // 💡 WRAPPER 1: Main Auth Container for background and centering
+        // 💡 WRAPPER 1: Main Auth Container (Crucial for background/centering)
         <div className="auth-page-container login-page"> 
             
-            {/*  WRAPPER 2: The beautiful, translucent form box */}
+            {/* WRAPPER 2: The beautiful, translucent form box */}
             <div className="form-container">
                 
-                {/* Logo/Icon (Uncomment if react-icons is installed) */}
-                {/* {FaComments && <FaComments className="logo-icon" />} */}
+                {/* Logo/Icon */}
+                {FaComments && <FaComments className="logo-icon" />}
                 
                 <h2>{"PINSTAGRAM"}</h2> 
                 <p>Welcome Back! Connect in real-time</p>
 
-                {/*  Tab-Style Button Group */}
+                {/* Tab-Style Button Group */}
                 <div className="button-group"> 
-                    {/* Login Button (Active tab, use disabled to hold style) */}
+                    {/* Login Button (Active) */}
                     <button type="button" disabled style={{ flex: 1 }}>Sign In</button>
-                    {/* Register Button (Not active) links to the registration page */}
+                    {/* Register Button (Inactive) */}
                     <Link to="/register" style={{ flex: 1 }}>
                         <button type="button">Register</button>
                     </Link>
@@ -95,8 +105,6 @@ const Login = () => {
 
                 {/* --- Messages and Errors --- */}
                 {error && <p style={{ color: '#ff4d4f', marginTop: '10px' }}>{error}</p>}
-                
-                {/* The redundant 'Don't have an account' link is now handled by the button-group */}
             </div>
         </div>
     );
